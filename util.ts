@@ -16,7 +16,7 @@ async function* find(url: string, regexExt: RegExp): AsyncGenerator<string> {
 }
 
 export async function* getFiles(paths: string[], fileExtensions: string) {
-  const regexExt = new RegExp(`\.${fileExtensions.replace(/,/g, "|")}$`);
+  const regexExt = new RegExp(`\.(${fileExtensions.replace(/,/g, "|")})$`);
   for (const arg of paths) {
     const path = posix.resolve(arg as string);
     yield* find(path, regexExt);
