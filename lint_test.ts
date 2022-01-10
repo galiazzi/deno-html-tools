@@ -1,5 +1,4 @@
 import {
-  assertEquals,
   assertRejects,
 } from "https://deno.land/std@0.119.0/testing/asserts.ts";
 import { denoLint, lint } from "./lint.ts";
