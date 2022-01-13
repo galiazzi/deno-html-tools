@@ -20,7 +20,7 @@ if (!["fmt", "lint"].includes(cmd as string)) {
   Deno.exit(1);
 }
 
-const isStdin = argv._.shift() === "-" && cmd == "fmt";
+const isStdin = argv._?.[0] === "-" && cmd == "fmt";
 if (isStdin) {
   const formated = await formatSource(
     new TextDecoder().decode(readAllSync(Deno.stdin)),
