@@ -5,28 +5,28 @@ any content inside `script` tags and processes the content with deno fmt / lint.
 
 By default, all files with the extension `.html` or `.vue` will be processed.
 
-## Example
+## Examples
 
 Formatting files in current folder
 
 ```
-$ deno run --allow-read --allow-run --allow-write index.ts fmt .
+$ deno run --allow-read --allow-run --allow-write src/index.ts fmt .
 ```
 
 Formatting check
 
 ```
-$ deno run --allow-read --allow-run index.ts fmt --check .
+$ deno run --allow-read --allow-run src/index.ts fmt --check .
 ```
 
 Specifying file extensions
 
 ```
-$ deno run --allow-read --allow-run index.ts fmt --check --ext=html,vue .
+$ deno run --allow-read --allow-run src/index.ts fmt --check --ext=html,vue .
 ```
 
 Linting check
 
 ```
-$ deno run --allow-read --allow-run index.ts lint .
+$ deno run --allow-read --allow-run src/index.ts lint .
 ```
