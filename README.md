@@ -38,6 +38,3 @@ Linting check
 ```
 $ deno run --allow-read --allow-run src/index.ts lint .
 ```
-
-```
-```
