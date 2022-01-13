@@ -30,3 +30,33 @@ console.log(a);
   `;
   assertEquals(result, Deno.readTextFileSync(tmpFile));
 });
+
+Deno.test("format multiple", async () => {
+  const tmpFile = Deno.makeTempFileSync();
+  const origin = `
+  <script>
+    const a = 'test';
+    console.log(a);
+  </script>
+
+  <script>
+    const b = 'test_b';
+      console.log(b);
+  </script>
+  `;
+  Deno.writeTextFileSync(tmpFile, origin);
+  await fmt(tmpFile);
+
+  const result = `
+  <script>
+const a = "test";
+console.log(a);
+</script>
+
+  <script>
+const b = "test_b";
+console.log(b);
+</script>
+  `;
+  assertEquals(result, Deno.readTextFileSync(tmpFile));
+});

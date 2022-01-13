@@ -1,6 +1,6 @@
 import { posix } from "./deps.ts";
 
-export const REGEX_SCRIPT = /<script ?([^>]*)>(.*)<\/script>/gs;
+export const REGEX_SCRIPT = /<script ?([^>]*)>(.*?)<\/script>/gs;
 
 async function* find(url: string, regexExt: RegExp): AsyncGenerator<string> {
   const fileInfo = await Deno.lstat(url);
