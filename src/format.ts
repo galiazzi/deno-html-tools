@@ -1,13 +1,9 @@
 import { diff } from "./diff.ts";
 import { REGEX_SCRIPT } from "./util.ts";
+import { jsBeautify } from "./deps.ts";
+import { FmtConfig } from "./config.ts";
 
-export class InvalidFormatError extends Error {
-  constructor(public originSource: string, public resultSource: string) {
-    super("Invalid Format");
-  }
-}
-
-export async function denoFmt(source: string) {
+export async function denoFmt(source: string, config?: FmtConfig) {
   const p = Deno.run({
     cmd: [
       Deno.execPath(),
@@ -35,7 +31,9 @@ export async function denoFmt(source: string) {
   throw new Error(new TextDecoder().decode(rawError));
 }
 
-export async function formatSource(source: string, check = false) {
+export async function formatSource(source: string, config: FmtConfig) {
+  source = jsBeautify.html(source, config.beautify);
+
   const parts: string[] = [];
   let lastPos = 0;
   for (const t of source.matchAll(REGEX_SCRIPT)) {
@@ -43,10 +41,6 @@ export async function formatSource(source: string, check = false) {
     const newSource = await denoFmt(scriptSource);
     if (newSource.trim() == scriptSource) {
       continue;
-    }
-
-    if (check) {
-      throw new InvalidFormatError(scriptSource, newSource.trim());
     }
 
     parts.push(source.substring(lastPos, t.index));
@@ -65,9 +59,9 @@ export async function formatSource(source: string, check = false) {
   return parts.join("");
 }
 
-export async function fmt(path: string) {
+export async function fmt(path: string, config: FmtConfig) {
   const source = Deno.readTextFileSync(path);
-  const result = await formatSource(source);
+  const result = await formatSource(source, config);
   if (source === result) {
     return;
   }
@@ -75,16 +69,12 @@ export async function fmt(path: string) {
   console.log(path);
 }
 
-export async function check(path: string) {
+export async function check(path: string, config: FmtConfig) {
   const source = Deno.readTextFileSync(path);
-  try {
-    await formatSource(source, true);
-  } catch (e) {
-    if (e instanceof InvalidFormatError) {
-      console.log(`from: ${path}`);
-      diff(e.originSource, e.resultSource);
-      Deno.exit(1);
-    }
-    throw e;
+  const result = await formatSource(source, config);
+  if (source !== result) {
+    console.log(`from: ${path}`);
+    diff(source, result);
+    Deno.exit(1);
   }
 }

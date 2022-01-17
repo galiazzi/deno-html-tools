@@ -1,5 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.119.0/testing/asserts.ts";
 import { denoFmt, fmt } from "./format.ts";
+import { getConfig } from "./config.ts";
 
 Deno.test("format", async () => {
   assertEquals(`const a = "test";\n`, await denoFmt(`const a = 'test';`));
@@ -17,17 +18,15 @@ Deno.test("format", async () => {
   </script>
   `;
   Deno.writeTextFileSync(tmpFile, origin);
-  await fmt(tmpFile);
+  await fmt(tmpFile, getConfig());
 
-  const result = `
-  <template>
-    <div></div>
-  </template>
-  <script>
+  const result = `<template>
+  <div></div>
+</template>
+<script>
 const a = "test";
 console.log(a);
-</script>
-  `;
+</script>`;
   assertEquals(result, Deno.readTextFileSync(tmpFile));
 });
 
@@ -42,21 +41,18 @@ Deno.test("format multiple", async () => {
   <script>
     const b = 'test_b';
       console.log(b);
-  </script>
-  `;
+  </script>`;
   Deno.writeTextFileSync(tmpFile, origin);
-  await fmt(tmpFile);
+  await fmt(tmpFile, getConfig());
 
-  const result = `
-  <script>
+  const result = `<script>
 const a = "test";
 console.log(a);
 </script>
 
-  <script>
+<script>
 const b = "test_b";
 console.log(b);
-</script>
-  `;
+</script>`;
   assertEquals(result, Deno.readTextFileSync(tmpFile));
 });

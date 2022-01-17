@@ -2,9 +2,10 @@ import { parse, pooledMap, readAllSync } from "./deps.ts";
 import { check, fmt, formatSource } from "./format.ts";
 import { lint } from "./lint.ts";
 import { getFiles } from "./util.ts";
+import { getConfig } from "./config.ts";
 
 const argv = parse(Deno.args, {
-  string: "ext",
+  string: ["ext", "config"],
   boolean: "check",
   default: {
     ext: "html,vue",
@@ -20,13 +21,16 @@ if (!["fmt", "lint"].includes(cmd as string)) {
   Deno.exit(1);
 }
 
+const config = getConfig(argv?.config);
+
 const isStdin = argv._?.[0] === "-" && cmd == "fmt";
 if (isStdin) {
-  const formated = await formatSource(
-    new TextDecoder().decode(readAllSync(Deno.stdin)),
-    argv.check,
-  );
-  Deno.stdout.writeSync(new TextEncoder().encode(formated));
+  const source = new TextDecoder().decode(readAllSync(Deno.stdin));
+  const result = await formatSource(source, config);
+  if (argv.check && source !== result) {
+    Deno.exit(1);
+  }
+  Deno.stdout.writeSync(new TextEncoder().encode(result));
   Deno.exit(0);
 }
 
@@ -37,7 +41,7 @@ const results = pooledMap(
   currentJobs,
   getFiles(argv._ as string[], argv.ext),
   async (url: string) => {
-    await doIt(url);
+    await doIt(url, config);
   },
 );
 try {
