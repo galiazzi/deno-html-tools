@@ -4,12 +4,20 @@ import { jsBeautify } from "./deps.ts";
 import { FmtConfig } from "./config.ts";
 
 export async function denoFmt(source: string, config?: FmtConfig) {
+  const cmd = [Deno.execPath(), "fmt"];
+  if (config) {
+    cmd.push(
+      `--options-indent-width=${config.indentWidth}`,
+      `--options-line-width=${config.lineWidth}`,
+    );
+    config.singleQuote && cmd.push("--options-single-quote");
+    config.useTabs && cmd.push("--options-use-tabs");
+  }
+  cmd.push("-");
+  console.log(cmd);
+
   const p = Deno.run({
-    cmd: [
-      Deno.execPath(),
-      "fmt",
-      "-",
-    ],
+    cmd,
     stdin: "piped",
     stdout: "piped",
     stderr: "piped",
@@ -38,7 +46,7 @@ export async function formatSource(source: string, config: FmtConfig) {
   let lastPos = 0;
   for (const t of source.matchAll(REGEX_SCRIPT)) {
     const scriptSource = t.at(2)?.trim() as string;
-    const newSource = await denoFmt(scriptSource);
+    const newSource = await denoFmt(scriptSource, config);
     if (newSource.trim() == scriptSource) {
       continue;
     }

@@ -56,3 +56,33 @@ console.log(b);
 </script>`;
   assertEquals(result, Deno.readTextFileSync(tmpFile));
 });
+
+Deno.test("format different config", async () => {
+  const tmpFile = Deno.makeTempFileSync();
+  const origin = `
+  <template>
+    <div></div>
+  </template>
+  <script>
+    const a = 'test';
+    (function () { console.log(a); })();
+  </script>
+  `;
+  Deno.writeTextFileSync(tmpFile, origin);
+  const config = getConfig();
+  config.singleQuote = true;
+  config.indentWidth = 4;
+  config.beautify.indent_size = 4;
+  await fmt(tmpFile, config);
+
+  const result = `<template>
+    <div></div>
+</template>
+<script>
+const a = 'test';
+(function () {
+    console.log(a);
+})();
+</script>`;
+  assertEquals(result, Deno.readTextFileSync(tmpFile));
+});
