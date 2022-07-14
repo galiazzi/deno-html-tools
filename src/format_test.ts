@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.119.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.148.0/testing/asserts.ts";
 import { denoFmt, fmt } from "./format.ts";
 
 Deno.test("format", async () => {
@@ -56,6 +56,24 @@ console.log(a);
   <script>
 const b = "test_b";
 console.log(b);
+</script>
+  `;
+  assertEquals(result, Deno.readTextFileSync(tmpFile));
+});
+
+Deno.test("format with script attributes", async () => {
+  const tmpFile = Deno.makeTempFileSync();
+  const origin = `
+  <script type="test" other="foo">
+    console.log('test');
+  </script>
+  `;
+  Deno.writeTextFileSync(tmpFile, origin);
+  await fmt(tmpFile);
+
+  const result = `
+  <script type="test" other="foo">
+console.log("test");
 </script>
   `;
   assertEquals(result, Deno.readTextFileSync(tmpFile));

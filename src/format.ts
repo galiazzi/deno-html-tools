@@ -51,7 +51,8 @@ export async function formatSource(source: string, check = false) {
 
     parts.push(source.substring(lastPos, t.index));
     lastPos = (t.index || 0) + (t.at(0)?.length || 0);
-    parts.push(`<script>\n${newSource}</script>`);
+    const attributes = t.at(1) ? ` ${t.at(1)}` : "";
+    parts.push(`<script${attributes}>\n${newSource}</script>`);
   }
 
   if (!parts.length) {
