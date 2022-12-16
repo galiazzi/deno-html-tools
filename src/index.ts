@@ -15,7 +15,7 @@ const argv = parse(Deno.args, {
 const cmd = argv._.shift();
 if (!["fmt", "lint"].includes(cmd as string)) {
   console.error(
-    `\nInvalid command ${cmd}.\n\nValid commands are fmt or lint\n`,
+    `\nInvalid command ${cmd || ""}\n\nValid commands are fmt or lint\n`,
   );
   Deno.exit(1);
 }
