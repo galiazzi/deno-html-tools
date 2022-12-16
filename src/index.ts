@@ -1,6 +1,6 @@
 import { parse, pooledMap, readAllSync } from "./deps.ts";
 import { check, fmt, formatSource } from "./format.ts";
-import { lint } from "./lint.ts";
+import { lint, lintSourceAsJson } from "./lint.ts";
 import { getFiles } from "./util.ts";
 
 const argv = parse(Deno.args, {
@@ -20,13 +20,17 @@ if (!["fmt", "lint"].includes(cmd as string)) {
   Deno.exit(1);
 }
 
-const isStdin = argv._?.[0] === "-" && cmd == "fmt";
+const isStdin = argv._?.[0] === "-";
 if (isStdin) {
-  const formated = await formatSource(
-    new TextDecoder().decode(readAllSync(Deno.stdin)),
-    argv.check,
-  );
-  Deno.stdout.writeSync(new TextEncoder().encode(formated));
+  const result = (cmd === "fmt")
+    ? await formatSource(
+      new TextDecoder().decode(readAllSync(Deno.stdin)),
+      argv.check,
+    )
+    : await lintSourceAsJson(
+      new TextDecoder().decode(readAllSync(Deno.stdin)),
+    );
+  Deno.stdout.writeSync(new TextEncoder().encode(result));
   Deno.exit(0);
 }
 
