@@ -1,4 +1,5 @@
 import { diff } from "./diff.ts";
+import { DenoFmtOptions, DenoOptions } from "./type.ts";
 import { REGEX_SCRIPT } from "./util.ts";
 
 export class InvalidFormatError extends Error {
@@ -7,13 +8,14 @@ export class InvalidFormatError extends Error {
   }
 }
 
-export async function denoFmt(source: string) {
+export async function denoFmt(source: string, options: DenoFmtOptions = {}) {
+  const cmd = [Deno.execPath(), "fmt", "-"];
+  if (options.config) {
+    cmd.splice(2, 0, `--config=${options.config}`);
+  }
+
   const p = Deno.run({
-    cmd: [
-      Deno.execPath(),
-      "fmt",
-      "-",
-    ],
+    cmd,
     stdin: "piped",
     stdout: "piped",
     stderr: "piped",
@@ -35,17 +37,20 @@ export async function denoFmt(source: string) {
   throw new Error(new TextDecoder().decode(rawError));
 }
 
-export async function formatSource(source: string, check = false) {
+export async function formatSource(
+  source: string,
+  options: DenoFmtOptions = {},
+) {
   const parts: string[] = [];
   let lastPos = 0;
   for (const t of source.matchAll(REGEX_SCRIPT)) {
     const scriptSource = t.at(2)?.trim() as string;
-    const newSource = await denoFmt(scriptSource);
+    const newSource = await denoFmt(scriptSource, options);
     if (newSource.trim() == scriptSource) {
       continue;
     }
 
-    if (check) {
+    if (options.check) {
       throw new InvalidFormatError(scriptSource, newSource.trim());
     }
 
@@ -66,9 +71,9 @@ export async function formatSource(source: string, check = false) {
   return parts.join("");
 }
 
-export async function fmt(path: string) {
+export async function fmt(path: string, options: DenoOptions = {}) {
   const source = Deno.readTextFileSync(path);
-  const result = await formatSource(source);
+  const result = await formatSource(source, { ...options, check: false });
   if (source === result) {
     return;
   }
@@ -76,10 +81,10 @@ export async function fmt(path: string) {
   console.log(path);
 }
 
-export async function check(path: string) {
+export async function check(path: string, options: DenoOptions = {}) {
   const source = Deno.readTextFileSync(path);
   try {
-    await formatSource(source, true);
+    await formatSource(source, { ...options, check: true });
   } catch (e) {
     if (e instanceof InvalidFormatError) {
       console.log(`from: ${path}`);

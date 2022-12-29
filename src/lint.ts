@@ -1,9 +1,13 @@
+import { DenoLintOptions, DenoOptions } from "./type.ts";
 import { REGEX_SCRIPT } from "./util.ts";
 
-export async function denoLint(source: string, json = false) {
+export async function denoLint(source: string, options: DenoLintOptions = {}) {
   const cmd = [Deno.execPath(), "lint", "-"];
-  if (json) {
+  if (options.json) {
     cmd.splice(2, 0, "--json");
+  }
+  if (options.config) {
+    cmd.splice(2, 0, `--config=${options.config}`);
   }
   const p = Deno.run({
     cmd,
@@ -21,21 +25,26 @@ export async function denoLint(source: string, json = false) {
   const rawError = await p.stderrOutput();
   p.close();
 
-  if (code === 0 || json) {
+  if (code === 0 || options.json) {
     return new TextDecoder().decode(rawOutput);
   }
 
   throw new Error(new TextDecoder().decode(rawError));
 }
 
-export async function lintSourceAsJson(source: string) {
+export async function lintSourceAsJson(
+  source: string,
+  options: DenoOptions = {},
+) {
   const result: DenoLint = {
     diagnostics: [],
     errors: [],
   };
   for (const t of source.matchAll(REGEX_SCRIPT)) {
     const scriptSource = t.at(2) as string;
-    const lint = JSON.parse(await denoLint(scriptSource, true)) as DenoLint;
+    const lint = JSON.parse(
+      await denoLint(scriptSource, { ...options, json: true }),
+    ) as DenoLint;
 
     const linesAdd = source.substring(0, t.index).split("\n").length - 1;
     const bytesAdd = (t.index || 0) + (t.at(1)?.length || 0) +
@@ -54,17 +63,17 @@ export async function lintSourceAsJson(source: string) {
   return JSON.stringify(result);
 }
 
-export async function lintSource(source: string) {
+export async function lintSource(source: string, options: DenoOptions) {
   for (const t of source.matchAll(REGEX_SCRIPT)) {
     const scriptSource = t.at(2)?.trim() as string;
-    await denoLint(scriptSource);
+    await denoLint(scriptSource, options);
   }
 }
 
-export async function lint(path: string) {
+export async function lint(path: string, options: DenoOptions = {}) {
   const source = Deno.readTextFileSync(path);
   try {
-    await lintSource(source);
+    await lintSource(source, options);
   } catch (e) {
     console.log(`from: ${path}`);
     console.error(e.message);

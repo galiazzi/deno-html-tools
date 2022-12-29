@@ -12,6 +12,21 @@ Deno.test("lint", async () => {
   await denoLint(`// deno-lint-ignore-file\nconst a = "test";`);
 });
 
+Deno.test("lint with config", async () => {
+  const tmpFile = Deno.makeTempFileSync();
+  Deno.writeTextFileSync(
+    tmpFile,
+    JSON.stringify({
+      lint: {
+        rules: {
+          exclude: ["no-unused-vars"],
+        },
+      },
+    }),
+  );
+  await denoLint(`const a = "test";`, { config: tmpFile });
+});
+
 Deno.test("lint-json", async () => {
   assertEquals({
     "diagnostics": [
@@ -36,7 +51,7 @@ Deno.test("lint-json", async () => {
       },
     ],
     "errors": [],
-  }, JSON.parse(await denoLint(`const a = "test";`, true)));
+  }, JSON.parse(await denoLint(`const a = "test";`, { json: true })));
 
   assertEquals({
     "diagnostics": [],
@@ -46,7 +61,7 @@ Deno.test("lint-json", async () => {
         "message": "Expected ';', '}' or <eof> at _stdin.ts:1:4",
       },
     ],
-  }, JSON.parse(await denoLint(`co a = "test";`, true)));
+  }, JSON.parse(await denoLint(`co a = "test";`, { json: true })));
 });
 
 Deno.test("lint-html", async () => {

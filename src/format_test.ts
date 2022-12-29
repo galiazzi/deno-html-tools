@@ -5,6 +5,24 @@ Deno.test("format", async () => {
   assertEquals(`const a = "test";\n`, await denoFmt(`const a = 'test';`));
 });
 
+Deno.test("format with config", async () => {
+  const tmpFile = Deno.makeTempFileSync();
+  Deno.writeTextFileSync(
+    tmpFile,
+    JSON.stringify({
+      fmt: {
+        options: {
+          singleQuote: true,
+        },
+      },
+    }),
+  );
+  assertEquals(
+    `const a = 'test';\n`,
+    await denoFmt(`const a = "test";`, { config: tmpFile }),
+  );
+});
+
 Deno.test("format", async () => {
   const tmpFile = Deno.makeTempFileSync();
   const origin = `
