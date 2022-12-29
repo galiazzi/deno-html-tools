@@ -86,8 +86,8 @@ export async function check(path: string, options: DenoOptions = {}) {
   try {
     await formatSource(source, { ...options, check: true });
   } catch (e) {
+    console.log(`from: ${path}`);
     if (e instanceof InvalidFormatError) {
-      console.log(`from: ${path}`);
       diff(e.originSource, e.resultSource);
       Deno.exit(1);
     }
