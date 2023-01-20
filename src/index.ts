@@ -1,7 +1,7 @@
 import { parse, pooledMap, posix, readAllSync } from "./deps.ts";
 import { check, fmt, formatSource } from "./format.ts";
 import { lint, lintSourceAsJson } from "./lint.ts";
-import { getFiles } from "./util.ts";
+import { getFiles, readDenoFilesConfig } from "./util.ts";
 
 const argv = parse(Deno.args, {
   string: ["ext", "config"],
@@ -12,7 +12,7 @@ const argv = parse(Deno.args, {
   },
 });
 
-const cmd = argv._.shift();
+const cmd = argv._.shift() as "fmt" | "lint";
 if (!["fmt", "lint"].includes(cmd as string)) {
   console.error(
     `\nInvalid command ${cmd || ""}\n\nValid commands are fmt or lint\n`,
@@ -42,9 +42,13 @@ if (isStdin) {
 const currentJobs = 5;
 const doIt = cmd === "fmt" ? (argv.check ? check : fmt) : lint;
 
+const filesFilter = argv.config
+  ? readDenoFilesConfig(cmd, argv.config)
+  : undefined;
+
 const results = pooledMap(
   currentJobs,
-  getFiles(argv._ as string[], argv.ext),
+  getFiles(argv._ as string[], argv.ext, filesFilter),
   async (url: string) => {
     await doIt(url, { config: argv.config });
   },
