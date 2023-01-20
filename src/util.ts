@@ -43,7 +43,7 @@ export async function* getFiles(
   fileExtensions: string,
   filesFilter?: FilesFilter,
 ) {
-  const regexExt = new RegExp(`\.(${fileExtensions.replace(/,/g, "|")})$`);
+  const regexExt = new RegExp(`\\.(${fileExtensions.replace(/,/g, "|")})$`);
   if (!paths.length) {
     paths.push(".");
   }
