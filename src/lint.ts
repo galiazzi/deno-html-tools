@@ -1,7 +1,7 @@
-import { DenoLintOptions, DenoOptions } from "./type.ts";
+import { Options } from "./type.ts";
 import { REGEX_SCRIPT } from "./util.ts";
 
-export async function denoLint(source: string, options: DenoLintOptions = {}) {
+export async function denoLint(source: string, options: Options = {}) {
   const cmd = [Deno.execPath(), "lint", "-"];
   if (options.json) {
     cmd.splice(2, 0, "--json");
@@ -34,7 +34,7 @@ export async function denoLint(source: string, options: DenoLintOptions = {}) {
 
 export async function lintSourceAsJson(
   source: string,
-  options: DenoOptions = {},
+  options: Options = {},
 ) {
   const result: DenoLint = {
     diagnostics: [],
@@ -63,14 +63,14 @@ export async function lintSourceAsJson(
   return JSON.stringify(result);
 }
 
-export async function lintSource(source: string, options: DenoOptions) {
+export async function lintSource(source: string, options: Options) {
   for (const t of source.matchAll(REGEX_SCRIPT)) {
     const scriptSource = t.at(2)?.trim() as string;
     await denoLint(scriptSource, options);
   }
 }
 
-export async function lint(path: string, options: DenoOptions = {}) {
+export async function lint(path: string, options: Options = {}) {
   const source = Deno.readTextFileSync(path);
   try {
     await lintSource(source, options);

@@ -36,16 +36,14 @@ Deno.test("format", async () => {
   `;
   Deno.writeTextFileSync(tmpFile, origin);
   await fmt(tmpFile);
-
-  const result = `
-  <template>
-    <div></div>
-  </template>
-  <script>
+  console.log(tmpFile);
+  const result = `<template>
+  <div></div>
+</template>
+<script>
 const a = "test";
 console.log(a);
-</script>
-  `;
+</script>`;
   assertEquals(result, Deno.readTextFileSync(tmpFile));
 });
 
@@ -65,17 +63,15 @@ Deno.test("format multiple", async () => {
   Deno.writeTextFileSync(tmpFile, origin);
   await fmt(tmpFile);
 
-  const result = `
-  <script>
+  const result = `<script>
 const a = "test";
 console.log(a);
 </script>
 
-  <script>
+<script>
 const b = "test_b";
 console.log(b);
-</script>
-  `;
+</script>`;
   assertEquals(result, Deno.readTextFileSync(tmpFile));
 });
 
@@ -89,10 +85,8 @@ Deno.test("format with script attributes", async () => {
   Deno.writeTextFileSync(tmpFile, origin);
   await fmt(tmpFile);
 
-  const result = `
-  <script type="test" other="foo">
+  const result = `<script type="test" other="foo">
 console.log("test");
-</script>
-  `;
+</script>`;
   assertEquals(result, Deno.readTextFileSync(tmpFile));
 });

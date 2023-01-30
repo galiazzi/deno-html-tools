@@ -1,6 +1,7 @@
 import { parse, pooledMap, posix, readAllSync } from "./deps.ts";
 import { check, fmt, formatSource } from "./format.ts";
 import { lint, lintSourceAsJson } from "./lint.ts";
+import { getOptions } from "./options.ts";
 import { getFiles, readDenoFilesConfig } from "./util.ts";
 
 const argv = parse(Deno.args, {
@@ -23,17 +24,18 @@ if (!["fmt", "lint"].includes(cmd as string)) {
 if (argv.config) {
   argv.config = posix.resolve(argv.config);
 }
+const options = getOptions(argv.config);
 
 const isStdin = argv._?.[0] === "-";
 if (isStdin) {
   const result = (cmd === "fmt")
     ? await formatSource(
       new TextDecoder().decode(readAllSync(Deno.stdin)),
-      { check: argv.check, config: argv.config },
+      options,
     )
     : await lintSourceAsJson(
       new TextDecoder().decode(readAllSync(Deno.stdin)),
-      { config: argv.config },
+      options,
     );
   Deno.stdout.writeSync(new TextEncoder().encode(result));
   Deno.exit(0);
@@ -50,7 +52,7 @@ const results = pooledMap(
   currentJobs,
   getFiles(argv._ as string[], argv.ext, filesFilter),
   async (url: string) => {
-    await doIt(url, { config: argv.config });
+    await doIt(url, options);
   },
 );
 try {

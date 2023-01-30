@@ -1,6 +1,8 @@
 import { diff } from "./diff.ts";
-import { DenoFmtOptions, DenoOptions } from "./type.ts";
+import { Options } from "./type.ts";
 import { REGEX_SCRIPT } from "./util.ts";
+import { jsBeautify } from "./deps.ts";
+import { defaultOptions } from "./options.ts";
 
 export class InvalidFormatError extends Error {
   constructor(public originSource: string, public resultSource: string) {
@@ -8,7 +10,7 @@ export class InvalidFormatError extends Error {
   }
 }
 
-export async function denoFmt(source: string, options: DenoFmtOptions = {}) {
+export async function denoFmt(source: string, options: Options = {}) {
   const cmd = [Deno.execPath(), "fmt", "-"];
   if (options.config) {
     cmd.splice(2, 0, `--config=${options.config}`);
@@ -39,8 +41,13 @@ export async function denoFmt(source: string, options: DenoFmtOptions = {}) {
 
 export async function formatSource(
   source: string,
-  options: DenoFmtOptions = {},
+  options: Options = {},
 ) {
+  source = jsBeautify.html(
+    source,
+    options.jsBeautify || defaultOptions.jsBeautify,
+  );
+
   const parts: string[] = [];
   let lastPos = 0;
   for (const t of source.matchAll(REGEX_SCRIPT)) {
@@ -50,9 +57,9 @@ export async function formatSource(
       continue;
     }
 
-    if (options.check) {
-      throw new InvalidFormatError(scriptSource, newSource.trim());
-    }
+    // if (options.check) {
+    //   throw new InvalidFormatError(scriptSource, newSource.trim());
+    // }
 
     parts.push(source.substring(lastPos, t.index));
     lastPos = (t.index || 0) + (t.at(0)?.length || 0);
@@ -60,9 +67,9 @@ export async function formatSource(
     parts.push(`<script${attributes}>\n${newSource}</script>`);
   }
 
-  if (!parts.length) {
-    return source;
-  }
+  // if (!parts.length) {
+  //   return source;
+  // }
 
   if (lastPos < source.length) {
     parts.push(source.substring(lastPos));
@@ -71,7 +78,7 @@ export async function formatSource(
   return parts.join("");
 }
 
-export async function fmt(path: string, options: DenoOptions = {}) {
+export async function fmt(path: string, options: Options = {}) {
   const source = Deno.readTextFileSync(path);
   const result = await formatSource(source, { ...options, check: false });
   if (source === result) {
@@ -81,10 +88,13 @@ export async function fmt(path: string, options: DenoOptions = {}) {
   console.log(path);
 }
 
-export async function check(path: string, options: DenoOptions = {}) {
+export async function check(path: string, options: Options = {}) {
   const source = Deno.readTextFileSync(path);
   try {
-    await formatSource(source, { ...options, check: true });
+    const result = await formatSource(source, { ...options, check: false });
+    if (source !== result) {
+      throw new InvalidFormatError(source, result);
+    }
   } catch (e) {
     console.log(`from: ${path}`);
     if (e instanceof InvalidFormatError) {

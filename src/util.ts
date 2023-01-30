@@ -1,4 +1,5 @@
 import { JSONC, posix } from "./deps.ts";
+import { DenoConfig } from "./type.ts";
 
 export const REGEX_SCRIPT = /<script ?([^>]*)>(.*?)<\/script>/gs;
 
@@ -55,11 +56,11 @@ export async function* getFiles(
 
 export function readDenoFilesConfig(
   cmd: "fmt" | "lint",
-  configUrl: string,
+  config: DenoConfig,
 ): FilesFilter {
-  const config = JSONC.parse(Deno.readTextFileSync(configUrl))?.[cmd]
-    ?.files as FilesFilter;
-  config.exclude = config.exclude?.map((e) => posix.resolve(e));
-  config.include = config.include?.map((e) => posix.resolve(e));
-  return config;
+  const files = config?.[cmd]?.files;
+  return {
+    exclude: files?.exclude?.map((e) => posix.resolve(e)),
+    include: files?.include?.map((e) => posix.resolve(e)),
+  };
 }
