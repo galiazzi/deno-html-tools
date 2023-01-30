@@ -44,8 +44,8 @@ if (isStdin) {
 const currentJobs = 5;
 const doIt = cmd === "fmt" ? (argv.check ? check : fmt) : lint;
 
-const filesFilter = argv.config
-  ? readDenoFilesConfig(cmd, argv.config)
+const filesFilter = options.denoConfig
+  ? readDenoFilesConfig(cmd, options.denoConfig)
   : undefined;
 
 const results = pooledMap(
