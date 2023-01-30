@@ -1,4 +1,5 @@
 import { DenoConfig, JsBeautify, Options } from "./type.ts";
+import { JSONC } from "./deps.ts";
 
 export const defaultOptions: Options = {
   jsBeautify: {
@@ -25,7 +26,7 @@ export function getOptions(denoConfigFile?: string): Options {
 
   options.config = denoConfigFile;
 
-  options.denoConfig = JSON.parse(Deno.readTextFileSync(denoConfigFile));
+  options.denoConfig = JSONC.parse(Deno.readTextFileSync(denoConfigFile));
   if (!options.denoConfig?.fmt) {
     return options;
   }

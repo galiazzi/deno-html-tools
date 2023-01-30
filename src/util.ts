@@ -1,4 +1,4 @@
-import { JSONC, posix } from "./deps.ts";
+import { posix } from "./deps.ts";
 import { DenoConfig } from "./type.ts";
 
 export const REGEX_SCRIPT = /<script ?([^>]*)>(.*?)<\/script>/gs;
