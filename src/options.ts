@@ -8,7 +8,7 @@ export const defaultOptions: Options = {
     indent_char: " ",
     wrap_line_length: 80,
     content_unformatted: ["script"],
-    // indent_scripts: "keep",
+    indent_scripts: "keep",
     // html: {
     //   js: {
     //     templating: "none",
@@ -45,5 +45,6 @@ export function toBeautify(config: DenoConfig): JsBeautify {
     indent_char: " ",
     wrap_line_length: fmtOptions?.lineWidth || 80,
     content_unformatted: ["script"],
+    indent_scripts: "keep",
   };
 }
