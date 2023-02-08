@@ -7,13 +7,14 @@ export const defaultOptions: Options = {
     indent_size: 2,
     indent_char: " ",
     wrap_line_length: 80,
-    indent_scripts: "keep",
-    html: {
-      js: {
-        templating: "auto",
-        end_with_newline: false,
-      },
-    },
+    content_unformatted: ["script"],
+    // indent_scripts: "keep",
+    // html: {
+    //   js: {
+    //     templating: "none",
+    //     end_with_newline: false,
+    //   },
+    // },
   },
 };
 
@@ -43,12 +44,6 @@ export function toBeautify(config: DenoConfig): JsBeautify {
     indent_size: fmtOptions?.indentWidth || 2,
     indent_char: " ",
     wrap_line_length: fmtOptions?.lineWidth || 80,
-    indent_scripts: "keep",
-    html: {
-      js: {
-        templating: "auto",
-        end_with_newline: false,
-      },
-    },
+    content_unformatted: ["script"],
   };
 }

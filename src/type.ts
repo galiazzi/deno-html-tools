@@ -11,8 +11,9 @@ export interface JsBeautify {
   indent_size: number;
   indent_char: string;
   wrap_line_length: number;
-  indent_scripts: string;
-  html: {
+  content_unformatted: string[];
+  indent_scripts?: string;
+  html?: {
     js: {
       templating: string;
       end_with_newline: boolean;
