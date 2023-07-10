@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.148.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.193.0/testing/asserts.ts";
 import { denoFmt, fmt } from "./format.ts";
 
 Deno.test("format", async () => {

@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertRejects,
-} from "https://deno.land/std@0.148.0/testing/asserts.ts";
+} from "https://deno.land/std@0.193.0/testing/asserts.ts";
 import { denoLint, lint, lintSourceAsJson } from "./lint.ts";
 
 Deno.test("lint-error", async () => {
