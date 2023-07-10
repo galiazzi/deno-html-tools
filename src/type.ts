@@ -30,12 +30,18 @@ export interface DenoConfig {
       singleQuote?: boolean;
       proseWrap?: string;
     };
+    include?: string[];
+    exclude?: string[];
+    // @deprecated
     files?: {
       include?: string[];
       exclude?: string[];
     };
   };
   lint?: {
+    include?: string[];
+    exclude?: string[];
+    // @deprecated
     files?: {
       include?: string[];
       exclude?: string[];
