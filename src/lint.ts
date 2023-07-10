@@ -9,6 +9,7 @@ export async function denoLint(source: string, options: Options = {}) {
   if (options.config) {
     cmd.splice(2, 0, `--config=${options.config}`);
   }
+  // deno-lint-ignore no-deprecated-deno-api
   const p = Deno.run({
     cmd,
     stdin: "piped",

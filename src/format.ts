@@ -16,6 +16,7 @@ export async function denoFmt(source: string, options: Options = {}) {
     cmd.splice(2, 0, `--config=${options.config}`);
   }
 
+  // deno-lint-ignore no-deprecated-deno-api
   const p = Deno.run({
     cmd,
     stdin: "piped",
