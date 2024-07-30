@@ -1,10 +1,10 @@
-import { parse, pooledMap, posix, readAllSync } from "./deps.ts";
+import { parseArgs, pooledMap, posix, readAllSync } from "./deps.ts";
 import { check, fmt, formatSource } from "./format.ts";
 import { lint, lintSourceAsJson } from "./lint.ts";
 import { getOptions } from "./options.ts";
 import { getFiles, readDenoFilesConfig } from "./util.ts";
 
-const argv = parse(Deno.args, {
+const argv = parseArgs(Deno.args, {
   string: ["ext", "config"],
   boolean: "check",
   default: {

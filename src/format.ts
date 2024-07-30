@@ -11,33 +11,29 @@ export class InvalidFormatError extends Error {
 }
 
 export async function denoFmt(source: string, options: Options = {}) {
-  const cmd = [Deno.execPath(), "fmt", "-"];
+  const cmd = ["fmt", "-"];
   if (options.config) {
-    cmd.splice(2, 0, `--config=${options.config}`);
+    cmd.splice(1, 0, `--config=${options.config}`);
   }
 
-  // deno-lint-ignore no-deprecated-deno-api
-  const p = Deno.run({
-    cmd,
+  const p = new Deno.Command(Deno.execPath(), {
+    args: cmd,
     stdin: "piped",
     stdout: "piped",
     stderr: "piped",
-  });
+  }).spawn();
 
-  await p.stdin?.write(new TextEncoder().encode(source));
-  p.stdin.close();
+  ReadableStream.from(source).pipeThrough(new TextEncoderStream()).pipeTo(
+    p.stdin,
+  );
 
-  const { code } = await p.status();
-
-  const rawOutput = await p.output();
-  const rawError = await p.stderrOutput();
-  p.close();
+  const { code, stdout, stderr } = await p.output();
 
   if (code === 0) {
-    return new TextDecoder().decode(rawOutput);
+    return new TextDecoder().decode(stdout);
   }
 
-  throw new Error(new TextDecoder().decode(rawError));
+  throw new Error(new TextDecoder().decode(stderr));
 }
 
 export async function formatSource(

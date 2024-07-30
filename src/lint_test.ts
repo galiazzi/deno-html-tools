@@ -43,7 +43,7 @@ Deno.test("lint-json", async () => {
             "bytePos": 7,
           },
         },
-        "filename": "_stdin.ts",
+        "filename": `${import.meta.resolve(Deno.cwd())}/$deno$stdin.ts`,
         "message": "`a` is never used",
         "code": "no-unused-vars",
         "hint":
@@ -57,9 +57,10 @@ Deno.test("lint-json", async () => {
     "diagnostics": [],
     "errors": [
       {
-        "file_path": "_stdin.ts",
-        "message":
-          `Expected ';', '}' or <eof> at _stdin.ts:1:4\n\n  co a = "test";\n     ~`,
+        "file_path": `${Deno.cwd()}/$deno$stdin.ts`,
+        "message": `Expected ';', '}' or <eof> at ${
+          import.meta.resolve(Deno.cwd())
+        }/$deno$stdin.ts:1:4\n\n  co a = "test";\n     ~`,
       },
     ],
   }, JSON.parse(await denoLint(`co a = "test";`, { json: true })));
@@ -93,7 +94,7 @@ Deno.test("lint-html-to-json", async () => {
   assertEquals({
     "diagnostics": [{
       code: "no-unused-vars",
-      filename: "_stdin.ts",
+      filename: `${import.meta.resolve(Deno.cwd())}/$deno$stdin.ts`,
       hint: "If this is intentional, prefix it with an underscore like `_a`",
       message: "`a` is never used",
       range: {
@@ -131,9 +132,10 @@ Deno.test("lint-multi-scripts-to-json", async () => {
   `;
   const result = JSON.parse(await lintSourceAsJson(origin));
   assertEquals(result.errors, [{
-    file_path: "_stdin.ts",
-    message:
-      `Expected ';', '}' or <eof> at _stdin.ts:2:6\n\n    co a = "test";\n       ~`,
+    file_path: `${Deno.cwd()}/$deno$stdin.ts`,
+    message: `Expected ';', '}' or <eof> at ${
+      import.meta.resolve(Deno.cwd())
+    }/$deno$stdin.ts:2:6\n\n    co a = "test";\n       ~`,
   }]);
 
   assertEquals(result.diagnostics[0].range, {
