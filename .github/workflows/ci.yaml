@@ -13,4 +13,4 @@ jobs:
           deno-version: v2.x
       - run: deno lint
       - run: deno fmt --check
-      - run: deno test --allow-write --allow-read --allow-run
+      - run: deno test --allow-write --allow-read --allow-run --allow-import
