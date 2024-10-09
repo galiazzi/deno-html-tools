@@ -74,6 +74,7 @@ export async function lint(path: string, options: Options = {}) {
     await lintSource(source, options);
   } catch (e) {
     console.log(`from: ${path}`);
+    // @ts-ignore trust me
     console.error(e.message);
     Deno.exit(1);
     // throw e;

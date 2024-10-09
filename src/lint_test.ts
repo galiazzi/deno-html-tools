@@ -51,6 +51,7 @@ Deno.test("lint-json", async () => {
       },
     ],
     "errors": [],
+    "version": 1,
   }, JSON.parse(await denoLint(`const a = "test";`, { json: true })));
 
   assertEquals({
@@ -63,6 +64,7 @@ Deno.test("lint-json", async () => {
         }/$deno$stdin.ts:1:4\n\n  co a = "test";\n     ~`,
       },
     ],
+    "version": 1,
   }, JSON.parse(await denoLint(`co a = "test";`, { json: true })));
 });
 
