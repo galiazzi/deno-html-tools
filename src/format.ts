@@ -23,7 +23,7 @@ export async function denoFmt(source: string, options: Options = {}) {
     stderr: "piped",
   }).spawn();
 
-  ReadableStream.from(source).pipeThrough(new TextEncoderStream()).pipeTo(
+  ReadableStream.from([source]).pipeThrough(new TextEncoderStream()).pipeTo(
     p.stdin,
   );
 

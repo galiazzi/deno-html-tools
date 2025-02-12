@@ -17,7 +17,7 @@ export async function denoLint(source: string, options: Options = {}) {
     stderr: "piped",
   }).spawn();
 
-  ReadableStream.from(source).pipeThrough(new TextEncoderStream()).pipeTo(
+  ReadableStream.from([source]).pipeThrough(new TextEncoderStream()).pipeTo(
     p.stdin,
   );
 
