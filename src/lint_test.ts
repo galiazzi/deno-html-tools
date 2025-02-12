@@ -29,6 +29,9 @@ Deno.test("lint with config", async () => {
 
 Deno.test("lint-json", async () => {
   assertEquals({
+    "checked_files": [
+      `${Deno.cwd()}/$deno$stdin.mts`,
+    ],
     "diagnostics": [
       {
         "range": {
@@ -43,7 +46,7 @@ Deno.test("lint-json", async () => {
             "bytePos": 7,
           },
         },
-        "filename": `${import.meta.resolve(Deno.cwd())}/$deno$stdin.ts`,
+        "filename": `${import.meta.resolve(Deno.cwd())}/$deno$stdin.mts`,
         "message": "`a` is never used",
         "code": "no-unused-vars",
         "hint":
@@ -55,13 +58,16 @@ Deno.test("lint-json", async () => {
   }, JSON.parse(await denoLint(`const a = "test";`, { json: true })));
 
   assertEquals({
+    "checked_files": [
+      `${Deno.cwd()}/$deno$stdin.mts`,
+    ],
     "diagnostics": [],
     "errors": [
       {
-        "file_path": `${Deno.cwd()}/$deno$stdin.ts`,
+        "file_path": `${Deno.cwd()}/$deno$stdin.mts`,
         "message": `Expected ';', '}' or <eof> at ${
           import.meta.resolve(Deno.cwd())
-        }/$deno$stdin.ts:1:4\n\n  co a = "test";\n     ~`,
+        }/$deno$stdin.mts:1:4\n\n  co a = "test";\n     ~`,
       },
     ],
     "version": 1,
@@ -96,7 +102,7 @@ Deno.test("lint-html-to-json", async () => {
   assertEquals({
     "diagnostics": [{
       code: "no-unused-vars",
-      filename: `${import.meta.resolve(Deno.cwd())}/$deno$stdin.ts`,
+      filename: `${import.meta.resolve(Deno.cwd())}/$deno$stdin.mts`,
       hint: "If this is intentional, prefix it with an underscore like `_a`",
       message: "`a` is never used",
       range: {
@@ -134,10 +140,10 @@ Deno.test("lint-multi-scripts-to-json", async () => {
   `;
   const result = JSON.parse(await lintSourceAsJson(origin));
   assertEquals(result.errors, [{
-    file_path: `${Deno.cwd()}/$deno$stdin.ts`,
+    file_path: `${Deno.cwd()}/$deno$stdin.mts`,
     message: `Expected ';', '}' or <eof> at ${
       import.meta.resolve(Deno.cwd())
-    }/$deno$stdin.ts:2:6\n\n    co a = "test";\n       ~`,
+    }/$deno$stdin.mts:2:6\n\n    co a = "test";\n       ~`,
   }]);
 
   assertEquals(result.diagnostics[0].range, {
