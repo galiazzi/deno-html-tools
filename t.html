@@ -1,0 +1,63 @@
+<template>
+  <div
+    style="display: flex; min-height: 0"
+    cambio="sadf"
+    teste="sdfasdfasdfa"
+    outracoisa="dfasfas"
+  >
+    <textarea ref="txt">{{ msg }}</textarea>
+  </div>
+</template>
+
+<script setup>
+  import ref from "vue";
+
+  const msg = ref();
+  // export default {
+  //   data() {
+  //     return {
+  //       a: 1,
+  //     };
+  //   },
+  // };
+</script>
+
+<style>
+  .s-popup {
+    position: absolute;
+    top: 0;
+    z-index: 1001;
+    display: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    flex: 1;
+    padding: 5px;
+    box-sizing: border-box;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .s-popup-seta {
+    border-color: transparent;
+    border-bottom-color: var(--s-text-color);
+    border-style: dashed dashed solid;
+    border-width: 0 10px 10px;
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: -10px;
+    right: 10px;
+  }
+
+  .s-popup-seta-down {
+    border-color: transparent;
+    border-top-color: var(--s-text-color);
+    border-style: dashed dashed solid;
+    border-width: 10px 10px 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+    bottom: -10px;
+    right: 10px;
+  }
+</style>
