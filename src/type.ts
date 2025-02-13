@@ -32,19 +32,9 @@ export interface DenoConfig {
     };
     include?: string[];
     exclude?: string[];
-    // @deprecated
-    files?: {
-      include?: string[];
-      exclude?: string[];
-    };
   };
   lint?: {
     include?: string[];
     exclude?: string[];
-    // @deprecated
-    files?: {
-      include?: string[];
-      exclude?: string[];
-    };
   };
 }

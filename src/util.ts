@@ -60,15 +60,6 @@ export function readDenoFilesConfig(
 ): FilesFilter {
   const cfg = config?.[cmd];
 
-  // @deprecated
-  const files = cfg?.files;
-  if (files) {
-    return {
-      exclude: files?.exclude?.map((e) => posix.resolve(e)),
-      include: files?.include?.map((e) => posix.resolve(e)),
-    };
-  }
-
   return {
     exclude: cfg?.exclude?.map((e) => posix.resolve(e)),
     include: cfg?.include?.map((e) => posix.resolve(e)),
