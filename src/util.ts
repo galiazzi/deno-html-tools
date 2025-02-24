@@ -1,11 +1,13 @@
+import { isGlob } from "jsr:@std/path@1.0.2/is-glob";
 import { posix } from "./deps.ts";
 import { DenoConfig } from "./type.ts";
+import { globToRegExp } from "jsr:@std/path@1.0.2/posix/glob-to-regexp";
 
 export const REGEX_SCRIPT = /<script ?([^>]*)>(.*?)<\/script>/gs;
 
 interface FilesFilter {
-  include?: string[];
-  exclude?: string[];
+  include?: (string | RegExp)[];
+  exclude?: (string | RegExp)[];
 }
 
 async function* find(
@@ -23,14 +25,22 @@ async function* find(
   if (regexExt.test(url)) {
     if (filesFilter?.include) {
       for (const e of filesFilter.include) {
-        if (!url.startsWith(e)) {
+        if (e instanceof RegExp) {
+          if (!e.test(url)) {
+            return;
+          }
+        } else if (!url.startsWith(e)) {
           return;
         }
       }
     }
     if (filesFilter?.exclude) {
       for (const e of filesFilter.exclude) {
-        if (url.startsWith(e)) {
+        if (e instanceof RegExp) {
+          if (e.test(url)) {
+            return;
+          }
+        } else if (url.startsWith(e)) {
           return;
         }
       }
@@ -60,8 +70,11 @@ export function readDenoFilesConfig(
 ): FilesFilter {
   const cfg = config?.[cmd];
 
+  const mapCofig = (e: string) =>
+    isGlob(e) ? globToRegExp(e) : posix.resolve(e);
+
   return {
-    exclude: cfg?.exclude?.map((e) => posix.resolve(e)),
-    include: cfg?.include?.map((e) => posix.resolve(e)),
+    exclude: cfg?.exclude?.map(mapCofig),
+    include: cfg?.include?.map(mapCofig),
   };
 }
